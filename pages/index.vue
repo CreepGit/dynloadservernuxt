@@ -2,7 +2,7 @@
 <div style="position: relative;">
     <h1>{{ title }}</h1>
     <WebsocketIndicator style="position:absolute; right: 10px; top: 10px;" />
-    <p>{{ data?.message }}</p>
+    <pre>{{ data?.message }}</pre>
     <p>ws status = {{ ws.status }}</p>
     <ClientOnly>
         <pre>sync{{ ws.trackList }}</pre>

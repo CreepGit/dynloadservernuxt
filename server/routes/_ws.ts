@@ -1,4 +1,15 @@
-export const clients: Record<string, any> = {}
+const clients: Record<string, any> = {}
+
+export function updateClients(...urls: string[]) {
+    for (const url of urls) { // Use 'for...of' to iterate over the values
+        for (const id in clients) {
+            clients[id].send({
+                type: "update",
+                target: url,
+            });
+        }
+    }
+}
 
 export default defineWebSocketHandler({
     open(peer) {

@@ -1,14 +1,18 @@
 import { formValue } from "../plugins/teststate"
-import { clients } from "../routes/_ws"
+import { updateClients } from "../routes/_ws"
+import { prismaClient } from "../plugins/prisma"
 
 export default defineEventHandler(async (event)=> {
     const body = await readBody(event)
     formValue.value = body.value
-    for (const id in clients) {
-        clients[id].send({
-            type: "update",
-            target: "/api/testform"
-        })
-    }
+    updateClients("/api/testform", "/api/test")
+
+    await prismaClient.testformdata.create({
+        data: {
+            value: body.value,
+        }
+    })
+    console.log("📋 Created database entry")
+
     return { message: "ok" }
 })
