@@ -2,6 +2,7 @@ import { ref } from "vue"
 import { clients } from "@/server/routes/_ws"
 
 export const value = ref(0)
+export const formValue = ref("Default value")
 
 export default defineNitroPlugin((nitroApp) => {
     console.log("Plugin loaded")

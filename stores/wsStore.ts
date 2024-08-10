@@ -2,7 +2,6 @@ export const useWsStore = defineStore("wsStore", ()=>{
     const conn = ref<WebSocket | null>(null)
     const status = ref("unopened")
     const reconnectTimeout = ref<NodeJS.Timeout | undefined>(undefined)
-    // const needRefresh = ref(false)
     const trackForRefres = ref<any>({})
 
     function connectWS() {
@@ -15,13 +14,12 @@ export const useWsStore = defineStore("wsStore", ()=>{
             status.value = "closed"
         }
         ws.onmessage = (e) => {
-            console.log(`Got message "${e.data}"`)
             const data = JSON.parse(e.data)
+            console.log(`Got message`, data)
             if (data.type === "update") {
                 const callback = trackForRefres.value[data.target]
                 if (callback) {
                     callback()
-                    console.log("Refreshed", data.target)
                 }
             }
         }
