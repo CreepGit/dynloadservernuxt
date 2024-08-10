@@ -8,7 +8,13 @@ export default defineEventHandler(async (event)=> {
     if (!JWT_SECRET) {
         throw new Error('JWT_SECRET not found')
     }
-    const payload = jwt.verify(token, JWT_SECRET)
+    let payload;
+    try {
+        payload = jwt.verify(token, JWT_SECRET)
+    } catch (e) {
+        throw createError({ statusCode: 401, statusMessage: 'Invalid token' })
+    }
 
-    return { message: 'Token verified', payload: payload }
+    const username = (payload as any)?.username || 'Username Lost'
+    return { message: 'Token verified', payload: payload, username: username}
 })

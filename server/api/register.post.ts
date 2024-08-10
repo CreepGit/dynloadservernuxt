@@ -7,10 +7,7 @@ export default defineEventHandler(async (event)=> {
     
     const foundUser = await prismaClient.user.findFirst({where: {username: username}})
     if (foundUser) {
-        return {
-            statusCode: 409,
-            body: JSON.stringify({ message: 'Username already exists' })
-        };
+        throw createError({ statusCode: 409, statusMessage: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
