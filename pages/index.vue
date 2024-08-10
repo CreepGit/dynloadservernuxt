@@ -1,21 +1,21 @@
 <template>
-<div>
+<div style="position: relative;">
     <h1>{{ title }}</h1>
     <p>val {{ value }}</p>
     <button @click="value++">Add</button>
+    <p>ws {{ ws.x }}</p>
+    <button @click="ws.x++">Add</button>
+    <WebsocketIndicator style="position:absolute; right: 10px; top: 10px;" />
+    <p>{{ data?.message }}</p>
+    <p>{{ msg }}</p>
 </div>
 </template>
 
 <script lang="ts" setup>
 const value = ref(0)
 const title = ref("Server")
-
-useFetch("/api/test?" + (process.client ? "client" : "server"), {server: false}).then(async ({data}) => {
-    interface data {
-        message: string,
-    }
-    console.log((data.value as data).message)
-})
+const ws = useWsStore()
+const msg = ref("wait...")
 
 onMounted(async ()=>{
     if (process.client) {
@@ -23,12 +23,10 @@ onMounted(async ()=>{
     }
 })
 
-// onServerPrefetch(async ()=>{
-//     // const res = await fetch("/api/test?" + (process.client ? "client" : "server"))
-//     // console.log(await res.json())
-//     const { data } = await useFetch("/api/test?" + (process.client ? "client" : "server"))
-//     console.log(data.value.message)
-// })
+const { data, error } = await useFetch("/api/test")
+console.log(data.value?.message)
+
+msg.value = data.value!.message
 </script>
 
 <style scoped>
