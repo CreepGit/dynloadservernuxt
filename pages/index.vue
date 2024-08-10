@@ -1,21 +1,18 @@
 <template>
 <div style="position: relative;">
     <h1>{{ title }}</h1>
-    <p>val {{ value }}</p>
-    <button @click="value++">Add</button>
-    <p>ws {{ ws.x }}</p>
-    <button @click="ws.x++">Add</button>
     <WebsocketIndicator style="position:absolute; right: 10px; top: 10px;" />
     <p>{{ data?.message }}</p>
-    <p>{{ msg }}</p>
+    <p>ws status = {{ ws.status }}</p>
+    <ClientOnly>
+        <pre>{{ ws.trackList }}</pre>
+    </ClientOnly>
 </div>
 </template>
 
 <script lang="ts" setup>
-const value = ref(0)
 const title = ref("Server")
 const ws = useWsStore()
-const msg = ref("wait...")
 
 onMounted(async ()=>{
     if (process.client) {
@@ -23,10 +20,14 @@ onMounted(async ()=>{
     }
 })
 
-const { data, error } = await useFetch("/api/test")
-console.log(data.value?.message)
+const { data, error, refresh } = await syncFetch("/api/test")
 
-msg.value = data.value!.message
+// watch(()=>ws.needRefresh, async (v: boolean)=>{
+//     if (v) {
+//         await refresh()
+//         ws.needRefresh = false
+//     }
+// })
 </script>
 
 <style scoped>
