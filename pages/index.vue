@@ -1,7 +1,6 @@
 <template>
 <div style="position: relative;">
     <h1>{{ title }}</h1>
-    <WebsocketIndicator />
     <pre>{{ data?.message }}</pre>
     <p>ws status = {{ ws.status }}</p>
     <ClientOnly>
