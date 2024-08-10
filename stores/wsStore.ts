@@ -3,6 +3,7 @@ export const useWsStore = defineStore("wsStore", ()=>{
     const status = ref("unopened")
     const reconnectTimeout = ref<NodeJS.Timeout | undefined>(undefined)
     const trackForRefres = ref<any>({})
+    const updateCounter = ref(0)
 
     function connectWS() {
         const ws = new WebSocket("/_ws")
@@ -20,6 +21,7 @@ export const useWsStore = defineStore("wsStore", ()=>{
                 const callback = trackForRefres.value[data.target]
                 if (callback) {
                     callback()
+                    updateCounter.value = updateCounter.value + 1
                 }
             }
         }
@@ -45,5 +47,5 @@ export const useWsStore = defineStore("wsStore", ()=>{
         return Object.keys(trackForRefres.value)
     })
 
-    return { conn, status, addTrack, trackList }
+    return { conn, status, addTrack, trackList, updateCounter }
 })
