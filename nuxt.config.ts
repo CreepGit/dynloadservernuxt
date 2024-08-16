@@ -8,7 +8,18 @@ export default defineNuxtConfig({
       websocket: true,
     }
   },
-  modules: [
-    '@pinia/nuxt',
-  ]
+  modules: ['@pinia/nuxt', "@sidebase/nuxt-auth"],
+  auth: {
+    baseURL: '/api/auth',
+    provider: {
+      type: 'refresh',
+      token: {
+        signInResponseTokenPointer: '/token',
+      },
+      refreshToken: {
+        signInResponseRefreshTokenPointer: '/refreshToken',
+      }
+    },
+    globalAppMiddleware: true,
+  }
 })

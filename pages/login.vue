@@ -1,45 +1,51 @@
 <template>
     <div>
         <h1>Login</h1>
-        <form @submit.prevent="submitLogin" class="loginform">
+        <pre>{{ auth }}</pre>
+        <div class="loginform" v-if="!loggedIn">
             <input type="text" placeholder="Username" v-model="username">
+            <p v-for="err in problem.username" :key="err">{{ err }}</p>
             <input type="password" placeholder="Password" v-model="password">
-            <input type="submit" value="Login">
-        </form>
-        <form @submit.prevent="verify" class="loginform">
-            <input type="text" disabled placeholder="Token" v-model="token">
-            <input type="submit" value="Verify">
-        </form>
+            <p v-for="err in problem.password" :key="err">{{ err }}</p>
+            <input type="submit" value="Login" @click.prevent="auth.signIn({username, password})">
+            <input type="submit" value="Register" @click.prevent="auth.signUp({username, password})">
+            <pre>{{ problem }}</pre>
+        </div>
+        <div class="loginform" v-else>
+            <input type="submit" value="Logout" @click.prevent="auth.signOut()">
+        </div>
+        <div class="loginform" v-if="decoded">
+            <pre>{{ decoded }}</pre>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { jwtDecode } from 'jwt-decode';
+import { userValid } from '~/assets/zods';
+
 const username = ref("")
 const password = ref("")
-const token = ref("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzIzMzAwNzEyLCJleHAiOjE3MjMzMDQzMTJ9.Bsn-uDzC0ePGnOw4WJd_vjI4wgsogdjUho0yxIz2soc")
+const auth = useAuth()
+const problem = ref<Partial<Record<'username'|'password', string[]>>>({})
 
-async function submitLogin() {
-    $fetch("/api/login", {
-        method: "POST",
-        body: {
-            username: username.value,
-            password: password.value,
-        }
-    })
-}
-async function verify() {
-    const res = await $fetch("/api/auth", {
-        method: "POST",
-        body: {
-            token: token.value,
-        }
-    })
-    if ((res as any).message == "Token verified") {
-        console.log("Token is valid")
-    } else {
-        console.log("Token is invalid")
+const loggedIn = computed(()=>auth.status.value == 'authenticated')
+
+const decoded = computed(()=>{
+    if (auth.token.value) {
+        return jwtDecode(auth.token.value)
     }
-}
+    return ''
+})
+watch([username, password], ([username, password])=>{
+    const { success, data, error } = userValid.safeParse({username, password})
+    if (error) {
+        problem.value = {...error.formErrors.fieldErrors}
+    } else {
+        problem.value = {}
+    }
+    // problem.value = error ? error : ''
+})
 </script>
 
 <style lang="scss">
