@@ -1,44 +1,46 @@
 <template>
     <div>
         <h1>Login</h1>
-        <form @submit.prevent="submitLogin" class="loginform">
+        <form v-if="!authStore.hasAuth" @submit.prevent="login" class="loginform">
             <input type="text" placeholder="Username" v-model="username">
             <input type="password" placeholder="Password" v-model="password">
             <input type="submit" value="Login">
+            <div v-if="loginProblem" class="issue">🌶️ {{loginProblem}}</div>
+            <div v-if="validationProblems">
+                <pre>{{validationProblems}}</pre>
+            </div>
         </form>
-        <form @submit.prevent="verify" class="loginform">
-            <input type="text" disabled placeholder="Token" v-model="token">
-            <input type="submit" value="Verify">
+        <form v-else @submit.prevent="authStore.logout" class="loginform">
+            <input type="submit" value="Logout">
         </form>
+        <div>
+            <h4>Store</h4>
+            <pre>{{ {token: authStore.token, payload: authStore.payload, state: authStore.state, hasAuth: authStore.hasAuth } }}</pre>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { UserValid } from '~/assets/zods';
+
 const username = ref("")
 const password = ref("")
-const token = ref("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzIzMzAwNzEyLCJleHAiOjE3MjMzMDQzMTJ9.Bsn-uDzC0ePGnOw4WJd_vjI4wgsogdjUho0yxIz2soc")
+const authStore = useAuthStore()
+const loginProblem = ref("")
 
-async function submitLogin() {
-    $fetch("/api/login", {
-        method: "POST",
-        body: {
-            username: username.value,
-            password: password.value,
-        }
+const validationProblems = computed(()=>{
+    const { success, error } = UserValid.safeParse({username: username.value, password: password.value})
+    if (success) return ''
+    return error.errors.map(e=>e.message).join('\n')
+})
+
+async function login() {
+    authStore.login({username: username.value, password: password.value}).then(()=>{
+        loginProblem.value = ""
+    }).catch((e:any)=>{
+        console.error(e.statusMessage)
+        loginProblem.value = e.statusMessage
     })
-}
-async function verify() {
-    const res = await $fetch("/api/auth", {
-        method: "POST",
-        body: {
-            token: token.value,
-        }
-    })
-    if ((res as any).message == "Token verified") {
-        console.log("Token is valid")
-    } else {
-        console.log("Token is invalid")
-    }
 }
 </script>
 
@@ -51,5 +53,8 @@ async function verify() {
     padding: 1rem;
     border: 1px solid black;
     border-radius: 0.333rem;
+}
+.issue {
+    color: darkred;
 }
 </style>
