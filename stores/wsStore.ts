@@ -16,7 +16,6 @@ export const useWsStore = defineStore("wsStore", ()=>{
         }
         ws.onmessage = (e) => {
             const data = JSON.parse(e.data)
-            console.log(`Got message`, data)
             if (data.type === "update") {
                 const callback = trackForRefres.value[data.target]
                 if (callback) {
