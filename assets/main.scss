@@ -1,0 +1,37 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--p-neutral-100);
+    padding: 1rem;
+}
+
+// Style classes
+.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // align-items: center;
+}
+
+.gap-s {
+    gap: 0.33rem;
+}
+
+.gap-m {
+    gap: 0.66rem;
+}
+
+.gap-l {
+    gap: 1rem;
+}

@@ -1,18 +1,21 @@
 export const useWsStore = defineStore("wsStore", ()=>{
     const conn = ref<WebSocket | null>(null)
-    const status = ref("unopened")
+    const status = ref<"unopened"|"open"|"closed">("unopened")
     const reconnectTimeout = ref<NodeJS.Timeout | undefined>(undefined)
     const trackForRefres = ref<any>({})
     const updateCounter = ref(0)
 
     function connectWS() {
+        const toast = useToast()
         const ws = new WebSocket("/_ws")
         ws.onopen = () => {
             console.log("WebSocket connection established.")
             status.value = "open"
+            toast.add({summary: "WebSocket Connected", detail: "The WebSocket connection has been established.", severity: "success", life: 5000,})
         }
         ws.onclose = () => {
             status.value = "closed"
+            toast.add({summary: "WebSocket Disconnected", detail: "The WebSocket connection lost.", severity: "error", life: 15000 })
         }
         ws.onmessage = (e) => {
             const data = JSON.parse(e.data)

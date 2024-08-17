@@ -4,13 +4,14 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --host",
+    "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.3",
+    "@primevue/themes": "^4.0.4",
     "@prisma/client": "^5.18.0",
     "bcrypt": "^5.1.1",
     "js-cookie": "^3.0.5",
@@ -18,10 +19,13 @@
     "jwt-decode": "^4.0.0",
     "nuxt": "^3.12.4",
     "pinia": "^2.2.1",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.0.4",
     "vue": "latest",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@primevue/nuxt-module": "^4.0.4",
     "@types/bcrypt": "^5.0.2",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.6",

@@ -1,19 +1,23 @@
 <template>
 <div style="position: relative;">
-    <h1>{{ title }}</h1>
-    <pre>{{ data?.message }}</pre>
-    <p>ws status = {{ ws.status }}</p>
-    <ClientOnly>
-        <pre>sync{{ ws.trackList }}</pre>
-    </ClientOnly>
-    <br>
-    <div class="form">
-        <input type="text" disabled :value="formData?.message">
-        <form @submit.prevent="submitTestForm">
-            <input type="text" v-model="formText" style="flex-grow: 1;">
-            <input type="submit" value="Send">
-        </form>
-    </div>
+    <Card style="overflow-x: auto;">
+        <template #content>
+            <h1>{{ title }}</h1>
+            <pre>{{ data?.message }}</pre>
+            <p>ws status = {{ ws.status }}</p>
+            <ClientOnly>
+                <pre>sync{{ ws.trackList }}</pre>
+            </ClientOnly>
+            <br>
+            <div class="form">
+                <input type="text" disabled :value="formData?.message">
+                <form @submit.prevent="submitTestForm">
+                    <input type="text" v-model="formText" style="flex-grow: 1;">
+                    <input type="submit" value="Send">
+                </form>
+            </div>
+        </template>
+    </Card>
 </div>
 </template>
 
@@ -27,8 +31,8 @@ onMounted(async ()=>{
     }
 })
 
-const { data, error, refresh } = await syncFetch("/api/test")
-const { data: formData } = await syncFetch("/api/testform")
+const { data, error, refresh } = await syncFetch("/api/test") as any
+const { data: formData } = await syncFetch("/api/testform") as any
 // Type works belo, not above 😭
 // const { data, error, refresh } = await useFetch("/api/test")
 const formText = ref("")
