@@ -12,7 +12,7 @@
             <div class="form">
                 <input type="text" disabled :value="formData?.message">
                 <form @submit.prevent="submitTestForm">
-                    <input type="text" v-model="formText" style="flex-grow: 1;">
+                    <input type="text" placeholder="write to the database" v-model="formText" style="flex-grow: 1;">
                     <input type="submit" value="Send">
                 </form>
             </div>

@@ -29,9 +29,11 @@ export const useAuthStore = defineStore("authStore", () => {
     }
 
     async function login({ username, password }: { username: string, password: string }) {
+        token.value = undefined
         const { token: authToken } = await $fetch('/api/auth/login', { method: 'POST', body: { username, password } }) as any
         token.value = authToken as string
-        cookies.set('authToken', authToken, { sameSite: 'strict', expires: 1, })
+        // Cookie set should not be necessary with useCookie
+        // cookies.set('authToken', authToken, { sameSite: 'strict', expires: 1, })
     }
 
     async function refresh() {
@@ -54,6 +56,12 @@ export const useAuthStore = defineStore("authStore", () => {
         token.value = undefined
     }
 
+    async function register({ username, password }: { username: string, password: string }) {
+        token.value = undefined
+        const { token: authToken } = await $fetch('/api/auth/register', { method: 'POST', body: { username, password } }) as any
+        token.value = authToken as string
+    }
+
     let refreshInterval: any = undefined;
     onMounted(()=>{
         const threeMinutes = 3 * 60 * 1000
@@ -64,5 +72,5 @@ export const useAuthStore = defineStore("authStore", () => {
         clearTimeout(refreshInterval)
     })
 
-    return { token, state, payload, hasAuth, login, logout, expiresInSeconds }
+    return { token, state, payload, hasAuth, login, logout, register, expiresInSeconds }
 })

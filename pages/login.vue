@@ -26,6 +26,27 @@
                 <div>
                     <pre style="overflow-x: hidden;">{{ {token: authStore.token, payload: authStore.payload, state: authStore.state, hasAuth: authStore.hasAuth } }}</pre>
                 </div>
+                <br>
+                <h1 v-if="!authStore.hasAuth">Register new user</h1>
+                <form v-if="!authStore.hasAuth" @submit.prevent="register" class="loginForm2">
+                    <FloatLabel>
+                        <label for="username">Username</label>
+                        <InputGroup>
+                            <InputText v-model="registerUsername" id="username" />
+                        </InputGroup>
+                    </FloatLabel>
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-key"></i>
+                        </InputGroupAddon>
+                        <Password v-model="registerPassword" id="password" placeholder="Password" :feedback="false" :toggle-mask="true" />
+                    </InputGroup>
+                    <Button type="submit" label="Register" :disabled="registerDisabled" />
+                    <div v-if="registerProblem" class="issue">🌶️ {{registerProblem}}</div>
+                    <div v-if="registerValidationProblems">
+                        <pre>{{registerValidationProblems}}</pre>
+                    </div>
+                </form>
             </template>
         </Card>
     </div>
@@ -39,9 +60,19 @@ const password = ref("")
 const authStore = useAuthStore()
 const loginProblem = ref("")
 const loginDisabled = ref(false)
+const registerUsername = ref("")
+const registerPassword = ref("")
+const registerProblem = ref("")
+const registerDisabled = ref(false)
 
 const validationProblems = computed(()=>{
     const { success, error } = UserValid.safeParse({username: username.value, password: password.value})
+    if (success) return ''
+    return error.errors.map(e=>e.message).join('\n')
+})
+
+const registerValidationProblems = computed(()=>{
+    const { success, error } = UserValid.safeParse({username: registerUsername.value, password: registerPassword.value})
     if (success) return ''
     return error.errors.map(e=>e.message).join('\n')
 })
@@ -56,6 +87,19 @@ async function login() {
         loginProblem.value = e.statusMessage
     }).finally(()=>{
         setTimeout(()=>loginDisabled.value = false, 1000)
+    })
+}
+
+async function register() {
+    registerDisabled.value = true
+    registerProblem.value = ""
+    authStore.register({username: registerUsername.value, password: registerPassword.value}).then(()=>{
+        registerProblem.value = ""
+    }).catch((e:any)=>{
+        console.error(e.statusMessage)
+        registerProblem.value = e.statusMessage
+    }).finally(()=>{
+        setTimeout(()=>registerDisabled.value = false, 1000)
     })
 }
 </script>
