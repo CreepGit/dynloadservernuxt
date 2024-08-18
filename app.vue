@@ -1,7 +1,7 @@
 <template>
   <div>
     <Toast position="bottom-right" />
-    <Menubar :model="items" breakpoint="500px" >
+    <Menubar :model="items" breakpoint="700px" >
       <template #end>
         <div class="flex gap-m">
           <!-- <Button :icon="hasClientTakenOver ? 'pi pi-desktop' : 'pi pi-server'" disabled outlined severity="warning" /> -->
@@ -72,6 +72,7 @@ const items = computed<MenuItem[]>(()=>{
   return [
     { label: "Home", icon: "pi pi-home", class: router.currentRoute.value.path=='/'?"selectedMenuBarTab":"", command: () => router.push("/") },
     { label: "About", icon: "pi pi-paperclip", class: router.currentRoute.value.path=='/about'?"selectedMenuBarTab":"", command: () => router.push("/about") },
+    { label: "Protected", icon: "pi pi-unlock", class: router.currentRoute.value.path=='/protected'?"selectedMenuBarTab":"", command: () => router.push("/protected") },
     // { label: authStore.hasAuth ? "Auth" : "Login", icon: "pi pi-key", class: router.currentRoute.value.path=='/login'?"selectedMenuBarTab":"", command: () => router.push("/login") },
     { label: "Test", icon: 'pi pi-bolt', items: [
       { label: "Test toast", command: () => toast.add({life: 3500, closable: false, summary: "This is a test", severity: "info", detail: "No action required"}) }
