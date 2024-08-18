@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode"
 
-const allowedPages = ["/", "/about", ]
+const allowedPages = ["/", "/about", "/register" ]
 
 export default defineNuxtRouteMiddleware((to, from) => {
     if (allowedPages.includes(to.path)) return;
