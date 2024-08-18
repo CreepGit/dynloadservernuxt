@@ -13,7 +13,7 @@ export default eventHandler(async (event) => {
     }
     const dbUser = await prismaClient.user.findFirst({where: {username: data.username}})
     if (dbUser) {
-        return createError({statusCode: 401, statusMessage: "User with that name already exists"})
+        return createError({statusCode: 400, statusMessage: "User with that name already exists"})
     }
     const passwordHash = bcrypt.hashSync(data.password, 10)
     const dbNewUser = await prismaClient.user.create({data: {username: data.username, password: passwordHash}})

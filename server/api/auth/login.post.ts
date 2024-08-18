@@ -13,11 +13,11 @@ export default eventHandler(async (event) => {
     }
     const dbUser = await prismaClient.user.findFirst({where: {username: data.username}})
     if (!dbUser) {
-        return createError({statusCode: 401, statusMessage: "No user with that name"})
+        return createError({statusCode: 400, statusMessage: "No user with that name"})
     }
     const isPasswordGood = await bcrypt.compare(data.password, dbUser.password)
     if (!isPasswordGood) {
-        return createError({statusCode: 401, statusMessage: "Invalid password"})
+        return createError({statusCode: 400, statusMessage: "Invalid password"})
     }
     const token = jwt.sign({username: data.username} as JWTPayload, JWT_SECRET, {expiresIn: '2h'})
     return { token } as AuthStatus
