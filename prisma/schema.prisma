@@ -17,6 +17,8 @@ model testformdata {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   value     String
+  byUser    User?     @relation(fields: [byUserId], references: [id])
+  byUserId  Int?
 }
 
 model User {
@@ -24,4 +26,5 @@ model User {
   createdAt DateTime @default(now())
   username  String
   password  String
+  testforms testformdata[]
 }
