@@ -36,9 +36,7 @@ export default defineNuxtConfig({
       websocket: true,
     }
   },
-  modules: [
-    '@pinia/nuxt', '@primevue/nuxt-module'
-  ],
+  modules: ['@pinia/nuxt', '@primevue/nuxt-module', "@nuxt/fonts"],
   primevue: {
     options: {
       theme: {

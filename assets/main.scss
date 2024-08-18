@@ -8,6 +8,7 @@
 html {
     background: var(--p-neutral-100);
     padding: 1rem;
+    font-family: Nunito;
 }
 
 // Style classes
@@ -34,4 +35,13 @@ html {
 
 .gap-l {
     gap: 1rem;
+}
+
+.center {
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+.empty:empty {
+    display: none;
 }

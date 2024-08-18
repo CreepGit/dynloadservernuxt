@@ -13,14 +13,16 @@
                 <InputText v-model="loginForm.username" placeholder="Username" />
                 <InputText type="password" v-model="loginForm.password" placeholder="Password" :feedback="false" />
                 <Button label="Login" type="submit" />
-                <Card style="background-color: var(--p-amber-100);" v-if="loginProblems">
+                <!-- <Card style="background-color: var(--p-amber-100);" v-if="loginProblems">
                   <template #content>
                     <p>🌶️ {{ loginProblems }}</p>
                   </template>
-                </Card>
+                </Card> -->
+                <Message v-if="loginProblems" severity="warn">🌶️ {{ loginProblems }}</Message>
               </form>
               <Button v-if="authStore.hasAuth" icon="pi pi-lock" label="Logout" @click="authStore.logout" />
               <pre style="max-width: 250px; overflow-x: scroll;">{{ {token: authStore.token, payload: authStore.payload, state: authStore.state, hasAuth: authStore.hasAuth } }}</pre>
+              <Button v-if="!authStore.hasAuth" label="Go to registration" @click="router.push('/register')" outlined />
             </div>
           </Popover>
           <Button :icon=wsValues.icon @click="toggleWsMenu" aria-haspopup="true" aria-controls="wsmenu" :outlined=wsValues.outlined :severity=wsValues.severity />
@@ -69,7 +71,8 @@ const toast = useToast()
 const items = computed<MenuItem[]>(()=>{
   return [
     { label: "Home", icon: "pi pi-home", class: router.currentRoute.value.path=='/'?"selectedMenuBarTab":"", command: () => router.push("/") },
-    { label: authStore.hasAuth ? "Auth" : "Login", icon: "pi pi-key", class: router.currentRoute.value.path=='/login'?"selectedMenuBarTab":"", command: () => router.push("/login") },
+    { label: "About", icon: "pi pi-paperclip", class: router.currentRoute.value.path=='/about'?"selectedMenuBarTab":"", command: () => router.push("/about") },
+    // { label: authStore.hasAuth ? "Auth" : "Login", icon: "pi pi-key", class: router.currentRoute.value.path=='/login'?"selectedMenuBarTab":"", command: () => router.push("/login") },
     { label: "Test", icon: 'pi pi-bolt', items: [
       { label: "Test toast", command: () => toast.add({life: 3500, closable: false, summary: "This is a test", severity: "info", detail: "No action required"}) }
     ] }
