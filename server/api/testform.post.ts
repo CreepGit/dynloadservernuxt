@@ -1,32 +1,29 @@
 import { formValue } from "../plugins/teststate"
 import { updateClients } from "../routes/_ws"
 import { prismaClient } from "../plugins/prisma"
-import { getPayload } from "~/server/authenticationHelper"
+import { getUser } from "~/server/authenticationHelper"
 
 export default defineEventHandler(async (event)=> {
     const body = await readBody(event)
-    formValue.value = body.value
+    const text = body.value as string
+    const user = await getUser(event)
 
-    const userPayload = await getPayload(event)
-    let userId;
-    if (userPayload) {
-        const dbUser = await prismaClient.user.findFirst({where: {username: userPayload.username}})
-        if (dbUser) {
-            userId = dbUser.id
-        }
+    if (text.length < 4) {
+        return createError({statusCode: 400, message: "Text too short"})
     }
 
     await prismaClient.testformdata.create({
         data: {
-            value: body.value,
-            byUser: userId ? {
+            value: text,
+            byUser: user?.id ? {
                 connect: {
-                    id: userId,
+                    id: user.id,
                 }
             } : undefined
         }
     })
-    console.log("📋 Created database entry ", userId ? "connected to " + userId : "")
+    formValue.value = text
+    console.log("📋 Created database entry " + (user?.id ? "connected to " + user.id : ""))
     
     updateClients("/api/testform", "/api/test")
     return { message: "ok" }

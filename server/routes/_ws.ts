@@ -19,9 +19,6 @@ export default defineWebSocketHandler({
 
     message(peer, message) {
         console.log("[ws] message", peer, message);
-        if (message.text().includes("ping")) {
-            peer.send("pong");
-        }
     },
 
     close(peer, event) {

@@ -28,11 +28,6 @@
                 :feedback="false"
               />
               <Button label="Login" type="submit" />
-              <!-- <Card style="background-color: var(--p-amber-100);" v-if="loginProblems">
-                  <template #content>
-                    <p>🌶️ {{ loginProblems }}</p>
-                  </template>
-                </Card> -->
               <Message v-if="loginProblems" severity="warn"
                 >🌶️ {{ loginProblems }}</Message
               >
@@ -68,17 +63,27 @@
           :severity="wsValues.severity"
         />
         <Popover ref="wsmenu">
-          <div style="display: flex; flex-direction: column; gap: 0.333rem">
-            <InputGroup style="width: 160px">
+          <div class="flex-column gap-s">
+            <InputGroup style="width: 240px">
               <InputGroupAddon
                 ><i class="pi pi-wave-pulse"></i
               ></InputGroupAddon>
               <InputText :value="wsStore.status" disabled />
             </InputGroup>
-            <InputGroup style="width: 160px">
+            <InputGroup style="width: 240px">
+              <InputGroupAddon><i class="pi pi-wave-pulse"></i></InputGroupAddon>
+              <InputText :value="wsStore.activityName" disabled />
+            </InputGroup>
+            <InputGroup style="width: 240px">
               <InputGroupAddon><i class="pi pi-hashtag"></i></InputGroupAddon>
               <InputText :value="wsStore.updateCounter" disabled />
             </InputGroup>
+            <Tree :value="wsTreeValues" style="--p-tree-padding: 0; --p-tree-node-padding: 0; --p-tree-indent: 0;">
+              <template #default="slotProp">
+                <span style="padding-right: 1ch;">{{ slotProp.node.label }}</span>
+                <Badge v-show="slotProp.node.badge" :value="slotProp.node.badge" severity="info" size="small" />
+              </template>
+            </Tree>
           </div>
         </Popover>
       </div>
@@ -89,6 +94,7 @@
 <script setup lang="ts">
 import type { MenuMethods } from 'primevue/menu';
 import type { MenuItem } from 'primevue/menuitem';
+import type { TreeNode } from 'primevue/treenode';
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -133,6 +139,25 @@ async function login() {
     loginProblems.value = error.statusMessage || 'Unknowable error'
   })
 }
+const wsTreeValues = computed<TreeNode[]>(()=>{
+  const rootNode = []
+  const activeNodes: TreeNode[] = []
+  const inactiveNodes: TreeNode[] = []
+
+  for (const url of wsStore.trackList) {
+    const pendingUpdate = wsStore.updateQueue?.has(url) || false
+    const count = wsStore.updateInformation[url]?.updateCount || 0
+    const badge = count > 0 ? count.toString(): undefined
+    const suffix = pendingUpdate ? " 🔄" : ""
+    activeNodes.push({label: url + suffix, badge: badge, key: url, style: "opacity: 50%;"})
+  }
+
+  rootNode.push(
+    {label: "Active", key: "active-parent", children: activeNodes},
+    {label: "Inactive", key: "active-parent", children: inactiveNodes},
+  )
+  return rootNode
+})
 onMounted(()=>{
   hasClientTakenOver.value = true
 })

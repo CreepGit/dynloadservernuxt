@@ -10,6 +10,7 @@
             </ClientOnly>
             <br>
             <div class="form">
+                <div :key="i" v-for="msg,i in formData?.oldMessages">{{ msg.message }} <span v-show="msg.by" style="color: var(--p-amber-700);">by {{ msg.by }}</span></div>
                 <input type="text" disabled :value="formData?.message">
                 <form @submit.prevent="submitTestForm">
                     <input type="text" placeholder="write to the database" v-model="formText" style="flex-grow: 1;">
@@ -31,8 +32,9 @@ onMounted(async ()=>{
     }
 })
 
-const { data, error, refresh } = await syncFetch("/api/test") as any
-const { data: formData } = await syncFetch("/api/testform") as any
+const { data, error, refresh } = syncFetch("/api/test") as any
+const { data: formData } = syncFetch("/api/testform") as any
+
 // Type works belo, not above 😭
 // const { data, error, refresh } = await useFetch("/api/test")
 const formText = ref("")

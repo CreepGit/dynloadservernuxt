@@ -13,8 +13,10 @@ export default defineNitroPlugin((nitroApp) => {
     console.log("Plugin loaded")
 
     setInterval(()=>{
-        value.value++
-        updateClients("/api/test")
-    }, 5000)
+        if (Math.random() < 0.2) {
+            value.value++
+            updateClients("/api/test")
+        }
+    }, 1000)
 })
 
