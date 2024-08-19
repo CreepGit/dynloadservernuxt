@@ -1,5 +1,4 @@
 import { jwtDecode } from "jwt-decode"
-import cookies from "js-cookie"
 
 export const useAuthStore = defineStore("authStore", () => {
     const token = useCookie('authToken', { sameSite: 'strict' })
@@ -37,6 +36,19 @@ export const useAuthStore = defineStore("authStore", () => {
     }
 
     async function refresh() {
+        // local check
+        if (token.value) {
+            try {
+                const payload = jwtDecode(token.value)
+                if (payload == undefined) {
+                    token.value = undefined
+                }
+            } catch (error: any) {
+                console.warn("Stale token", error.statusMessage)
+                token.value = undefined
+            }
+        }
+        // remote check
         if (token.value) {
             try {
                 const { token: authToken } = await $fetch('/api/auth/status', { method: 'GET' }) as any

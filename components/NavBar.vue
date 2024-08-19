@@ -110,18 +110,29 @@ const wsTreeValues = computed<TreeNode[]>(() => {
   const rootNode = []
   const activeNodes: TreeNode[] = []
   const inactiveNodes: TreeNode[] = []
+  let activeUpdates = 0
+  let inactiveUpdates = 0
 
-  for (const url of wsStore.trackList) {
+  for (const [url, isTracked] of Object.entries(wsStore.trackedStatus)) {
     const pendingUpdate = wsStore.updateQueue?.has(url) || false
     const count = wsStore.updateInformation[url]?.updateCount || 0
     const badge = count > 0 ? count.toString() : undefined
     const suffix = pendingUpdate ? " 🔄" : ""
-    activeNodes.push({ label: url + suffix, badge: badge, key: url, style: "opacity: 50%;" })
+    const node = { label: url + suffix, badge: badge, key: url }
+    if (isTracked) {
+      activeNodes.push(node)
+      activeUpdates += pendingUpdate ? 1 : 0
+    } else {
+      inactiveNodes.push(node)
+      inactiveUpdates += pendingUpdate ? 1 : 0
+    }
   }
 
+  const activePendingSuffix = activeUpdates ? " 🔄" + activeUpdates.toString() : ""
+  const inactivePendingSuffix = inactiveUpdates ? " 🔄" + inactiveUpdates.toString() : ""
   rootNode.push(
-    { label: "Active", key: "active-parent", children: activeNodes },
-    { label: "Inactive", key: "active-parent", children: inactiveNodes },
+    { label: "Active" + activePendingSuffix, key: "active-parent", children: activeNodes },
+    { label: "Inactive" + inactivePendingSuffix, key: "active-parent", children: inactiveNodes },
   )
   return rootNode
 })
