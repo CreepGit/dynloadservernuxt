@@ -68,9 +68,6 @@ export const useAuthStore = defineStore("authStore", () => {
         refreshInterval = setInterval(()=>refresh(), threeMinutes)
         setTimeout(()=>refresh(), 1000)
     })
-    onUnmounted(()=>{
-        clearTimeout(refreshInterval)
-    })
 
     return { token, state, payload, hasAuth, login, logout, register, expiresInSeconds }
 })
